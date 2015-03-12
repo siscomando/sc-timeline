@@ -1,0 +1,92 @@
+<link rel="import" href="../font-roboto/roboto.html">
+<link rel="import" href="../core-list/core-list.html">
+<link rel="import" href="../core-icon/core-icon.html">
+<link rel="import" href="../core-icons/communication-icons.html">
+<link rel="import" href="../core-ajax/core-ajax.html">
+<link rel="import" href="../star-rating/star-rating.html">
+
+<!--
+Element providing the timeline to any apps.
+
+##### Example
+
+    <sc-timeline></sc-timeline>
+
+@element sc-timeline
+@blurb EElement providing the timeline to any apps.
+@status alpha
+@homepage http://github.com/siscomando/sc-timline
+-->
+<polymer-element name="sc-timeline" attributes="notitle author data emptyavatar">
+
+  <template>
+  <core-ajax
+  auto
+  url="issues.json"
+  handleAs="json"
+  response="{{response}}"
+  ></core-ajax>
+
+    <link rel="stylesheet" href="sc-timeline.css">
+    <div class="mainContent" flex horizontal layout>
+      <br>
+      <core-list data="{{response}}" flex>
+        <template>
+          <div class="row timeline-post {{ {selected: selected} | tokenList }}" horizontal layout>
+            <div class="columns shottime">{{ model.shottime }}</div>
+            <div class="columns division-icon">
+              <core-icon icon="{{ model.action.icon }}" class="pallete-icon-color autumn"></core-icon>
+            </div>
+            <div class="columns content" flex>
+                <div horizontal layout>
+                  <div class="thumbnail">
+                    <img src="{{ model.avatar.thumbnail || emptyavatar }}">
+                  </div> 
+                  <div class="author-info" flex>
+                    <div class="username">{{ model.username }} 
+                      <span class="title">at {{ model.issue.title }} | {{model.issue.register}}</span>
+                    </div>
+                    <div class="location">{{ model.location }}</div>
+                  </div>
+                </div>
+                <div class="stars">
+                    <star-rating votes="1" votesSum="3"></star-rating>
+                </div>
+                <div class="post">{{ model.content }}</div>
+            </div>
+          </div>
+        </template>
+      </core-list>
+      
+    </div>
+  </template>
+
+  <script>
+
+    Polymer({
+      /**
+       * The `author` attribute sets an initial author
+       *
+       * @attribute author
+       * @type string
+       * @default 'Horacio Ibrahim'
+       */
+      author: 'Horacio Ibrahim',
+      publish: {
+        // publics properties
+        emptyavatar: "http://blog.zwezdin.com/en/Content/Images/avatar-empty.png",
+      },
+      /* the best place to the constructor for array or object */
+      created: function() {
+        // initialize but it not is turned public to use by users of the element
+        // to turn public to use attributes or publish.
+      },
+      ready: function() {
+
+
+      }
+    });
+
+  </script>
+
+</polymer-element>

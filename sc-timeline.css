@@ -1,0 +1,114 @@
+:host {
+  position: relative;
+  height: 100%;
+  width: 100%;
+  display: block;
+  background-color: #F9F9F9;
+  font-family: 'RobotoDraft', sans-serif;
+  font-weight: 300;
+}
+/* To ensure your styling works under the Shadow DOM polyfill, see
+   www.polymer-project.org/docs/polymer/styling.html#directives */
+polyfill-next-selector { content: ':host > h2'; }
+::content h2 {
+  color: blue;
+}
+.mainContent {
+  height: 100%;
+  overflow: auto;
+  height: 100%;
+  width: 100%;  
+}
+.timeline-post, .row {
+  border-bottom: 1px solid #f9f9f9;
+  margin-bottom: 35px;
+  /* min-height: 300px;  this is defined by shottime */
+}
+core-list {
+
+}
+.shottime {
+  position: relative;
+  text-align: center;
+  padding: 20px;
+  font-size: 2em;
+  min-height: 80px; /* this set to height of the row */
+  color: #8B898F;
+  font-weight: 100;
+  vertical-align: middle;
+  min-width: 40px;
+  border-right: 1px solid #E0E0E0;
+}
+.division-icon {
+  margin-left: -12px;
+  position: relative;
+  vertical-align: middle;
+  padding-top: 25px;
+}
+.author-info {
+  padding-left: 8px;
+  padding-top: 3px;
+}
+.title {
+  font-size: 0.9em;
+  font-weight: 100 !important;
+  color: #8B898F;
+}
+.stars {
+  position: relative;
+  margin-top: 2px;
+  margin-bottom: 2px;
+}
+.username {
+  font-style: bold; 
+  font-weight: 700 !important;
+  line-height: 16px;
+}
+.location {
+  color: #888;
+  font-size: 0.8em;
+}
+.post {
+  font-weight: 400 !important; 
+  color: #3D3C40;
+  font-size: 14px;
+  line-height: 20px;
+}
+core-icon {
+  color: rgba(114, 98, 151, 0.8);
+  background-color: #F9F9F9;
+}
+core-icon .pallete-icon-color .autumn {
+  color: #726297;
+}
+.pallete-icon-color.spring{
+  color: #47CACC;
+}
+.pallete-icon-color.summer{
+  color: #FED359;
+}
+.pallete-icon-color.winter{
+  color: #344553;
+}
+.content {
+  width: 80%;
+  margin-left: 16px;
+  margin-top: 16px;  
+}
+.timeline-social {
+  /* .timeline-social is same level of .content
+      because its margins is same */
+  margin-left: 16px;
+  margin-top: 16px;  
+}
+.thumbnail img {
+  background-color: #ccc;
+  width: 48px;
+  height: 48px;
+  border-radius: 5px;
+  -moz-force-broken-image-icon: 1;
+}
+
+@media (min-width: 481px) {
+
+}

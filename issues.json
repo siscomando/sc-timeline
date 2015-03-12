@@ -1,0 +1,29 @@
+[
+{"shottime": "10'",
+"username": "horacioibrahim",
+"location": "SUPGS",
+"content": "C Atualização do firmware para versão 1.2 conforme descrito pelo suporte do fornecedor no site http://www.cisco.com/firmware/switch/3270/downloads #Cisco.Continua Atualização do firmware para versão 1.2 conforme descrito pelo suporte do fornecedor no site http://www.cisco.com/firmware/switch/3270/downloads #Cisco",
+"avatar": {"thumbnail": "http://api.randomuser.me/portraits/thumb/men/82.jpg"},
+"action": {"icon": "communication:chat"},
+"issue": {"register": "2015RI/00001313", "title": "SICAP - SISTEMA"},
+"social": {"relevance_stars": 3}
+},
+{"shottime": "8'",
+"username": "eduardonascimento",
+"location": "SUPGS",
+"content": "É necessário atualizar o firmware para versão 1.2 conforme descrito no suporte #Cisco",
+"avatar": {"thumbnail": "http://api.randomuser.me/portraits/thumb/men/83.jpg"},
+"action": {"icon": "communication:email"},
+"issue": {"register": "2015RI/00001313", "title": "SICAP - SISTEMA"},
+"social": {"relevance_stars": 1}
+},
+{"shottime": "1'",
+"username": "marcospaulo",
+"location": "CC",
+"content": "Verificar a demanda com serpro@eduardo.nascimento.",
+"avatar": {"thumbnail": "http://api.randomuser.me/portraits/thumb/men/84.jpg"},
+"action": {"icon": "communication:business"},
+"issue": {"register": "2015RI/00001313", "title": "SICAP - SISTEMA"},
+"social": {"relevance_stars": 0}
+}
+]
