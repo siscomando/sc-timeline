@@ -17,7 +17,7 @@ Element providing the timeline to any apps.
 @status alpha
 @homepage http://github.com/siscomando/sc-timline
 -->
-<polymer-element name="sc-timeline" attributes="notitle author data emptyavatar">
+<polymer-element name="sc-timeline" attributes="notitle author data emptyavatar url">
 
   <template>
   <core-ajax
@@ -30,7 +30,7 @@ Element providing the timeline to any apps.
     <link rel="stylesheet" href="sc-timeline.css">
     <div class="mainContent" flex horizontal layout>
       <br>
-      <core-list data="{{response}}" flex>
+      <core-list data="{{response}}" runwayFactor="12" flex>
         <template>
           <div class="row timeline-post {{ {selected: selected} | tokenList }}" horizontal layout>
             <div class="columns shottime">{{ model.shottime }}</div>
@@ -50,7 +50,7 @@ Element providing the timeline to any apps.
                   </div>
                 </div>
                 <div class="stars">
-                    <star-rating votes="1" votesSum="3"></star-rating>
+                    <star-rating votes="{{ model.relevance_stars }}" votesSum="1"></star-rating>
                 </div>
                 <div class="post">{{ model.content }}</div>
             </div>

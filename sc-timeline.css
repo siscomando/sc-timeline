@@ -6,6 +6,9 @@
   background-color: #F9F9F9;
   font-family: 'RobotoDraft', sans-serif;
   font-weight: 300;
+  overflow: auto;
+  /* border-radius: 10px;
+  border: 1px solid #D8D8D8; */
 }
 /* To ensure your styling works under the Shadow DOM polyfill, see
    www.polymer-project.org/docs/polymer/styling.html#directives */
@@ -14,10 +17,9 @@ polyfill-next-selector { content: ':host > h2'; }
   color: blue;
 }
 .mainContent {
-  height: 100%;
   overflow: auto;
   height: 100%;
-  width: 100%;  
+  width: 100%; 
 }
 .timeline-post, .row {
   border-bottom: 1px solid #f9f9f9;
@@ -25,7 +27,7 @@ polyfill-next-selector { content: ':host > h2'; }
   /* min-height: 300px;  this is defined by shottime */
 }
 core-list {
-
+ 
 }
 .shottime {
   position: relative;
@@ -36,7 +38,7 @@ core-list {
   color: #8B898F;
   font-weight: 100;
   vertical-align: middle;
-  min-width: 40px;
+  min-width: 75px;
   border-right: 1px solid #E0E0E0;
 }
 .division-icon {
@@ -73,6 +75,7 @@ core-list {
   color: #3D3C40;
   font-size: 14px;
   line-height: 20px;
+  padding-right: 20px;
 }
 core-icon {
   color: rgba(114, 98, 151, 0.8);
@@ -109,6 +112,24 @@ core-icon .pallete-icon-color .autumn {
   -moz-force-broken-image-icon: 1;
 }
 
-@media (min-width: 481px) {
+@media (max-width: 481px) {
+  .shottime {
+    position: relative;
+    text-align: center;
+    padding: 28px 16px 10px 8px;
+    font-size: 0.85em;
+    min-height: 80px; /* this set to height of the row */
+    color: #8B898F;
+    font-weight: 100;
+    vertical-align: middle;
+    min-width: 32px;
+    border-right: 1px solid #E0E0E0;
+}
+.timeline-post, .row {
+  margin-bottom: 45px;
+}
+.post {
+  padding-right: 5px;  
+}
 
 }
