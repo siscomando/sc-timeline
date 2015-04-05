@@ -24,18 +24,28 @@
 
   <!-- You use the document as a place to set up your fixtures. -->
   <sc-timeline></sc-timeline>
+  <button id="eventBtn">Dispatch Event!</button>
 
   <script>
-    var myEl = document.querySelector('sc-timeline');
 
-    suite('<sc-header>', function() {
+    suite('<sc-timeline>', function() {
+      var myEl = document.querySelector('sc-timeline');
+      var coreList = myEl.querySelector('core-list');
 
       test('defines the "author" property', function() {
         assert.equal(myEl.author, 'Horacio Ibrahim');
       });
-
+      test('tests when sc-sse-response is dispatched', function() {
+        var comment = '{"_id": {"$oid": "551be897f2c3820d48471176"}, "issue_id": {"Issue": {"register": "2015RI00009568", "title": "SISCOP - SISTEMA"}}, "created_at": {"$date": 1427881571744}, "shottime": 119, "body": "Continua trabalhando na demanda", "author": {"User": {"shortname": "mariajulia", "location": null, "avatar": "http://api.randomuser.me/portraits/thumb/women/9.jpg"}}, "stars": 0, "origin": 0}';          
+        var evt = document.createEvent("Event");
+        evt.initEvent("sc-sse-response", true, true);
+        evt.detail = {response: comment, alias:"sseTimeline"};
+        document.dispatchEvent(evt);        
+        assert.equal(myEl.response.comments.length, 1);
+        assert.equal(myEl.response.comments[0].shottime, 119);
+        // TODO: to test if core-list render the data.
+      });
     });
-    }
   </script>
 
 </body>
