@@ -156,9 +156,34 @@ Element providing the timeline to any apps.
           if (currentElem.response == null) {
               currentElem.response = {"comments": []};
           }           
-          if (('alias' in e.detail) && (e.detail.alias == 'sseTimeline') && (e.detail.response != 1)) {
-            var newComment = JSON.parse(e.detail.response);
-            currentElem.response.comments.unshift(newComment);
+          if (('alias' in e.detail) && (e.detail.alias == 'sseTimeline') && (e.detail.response != 1)
+              && (e.detail.response != null) && (e.detail.response != undefined)) {
+              switch(typeof(e.detail.response)) {
+                case 'string':
+                  var newComment = JSON.parse(e.detail.response);
+                  break;
+                case 'object':
+                  var newComment = e.detail.response;
+                default:
+                  var newComment = false;
+              }
+
+          if (!(newComment == false)) {
+            // start real update
+              var containsComment = false;
+              for (var item in currentElem.response.comments.length) {
+                item_id = item_id.$oid;
+                comment_id = newComment._id.$oid;
+                if (item_id == comment_id ) {
+                    containsComment = true;
+                }
+              }
+              if (containsComment == false) {
+                currentElem.response.comments.unshift(newComment);  
+              }            
+            // end real update            
+          }
+                        
           }
         });
       },
