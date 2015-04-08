@@ -70,6 +70,10 @@ core-list {
   color: #888;
   font-size: 0.8em;
 }
+.timepost {
+  color: #C8C8C8;
+  font-size: 0.7em;
+}
 .post {
   font-weight: 400 !important; 
   color: #3D3C40;

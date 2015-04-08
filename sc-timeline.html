@@ -44,13 +44,14 @@ Element providing the timeline to any apps.
             <div class="columns content" flex>
                 <div horizontal layout>
                   <div class="thumbnail">
-                    <img src="{{ model.avatar.thumbnail || emptyavatar }}">
+                    <img src="{{ model.author.User.avatar || emptyavatar }}">
                   </div> 
                   <div class="author-info" flex>
                     <div class="username">{{ model.author.User.shortname }} 
                       <span class="title">at {{ model.issue_id.Issue.title }} | <sc-link>{{model.issue_id.Issue.register}}</sc-link></span>
                     </div>
                     <div class="location">{{ model.author.User.location }}</div>
+                    <div class="timepost">{{ model.created_at_human }}</div>
                   </div>
                 </div>
                 <div class="stars">
