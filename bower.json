@@ -1,0 +1,34 @@
+{
+  "name": "sc-timeline",
+  "version": "0.0.2",
+  "authors": [
+    "Horacio Ibrahim <horacioibrahim@gmail.com>"
+  ],
+  "description": "Element providing the timeline to any apps.",
+  "keywords": [
+    "web-component",
+    "web-components",
+    "polymer",
+    "sc-timeline",
+    "timeline"
+  ],
+  "main": "sc-timeline.html",
+  "license": "MIT",
+  "homepage": "https://github.com/siscomando/timeline/",
+  "ignore": [
+    "/.*",
+    "/tests/"
+  ],
+  "dependencies": {
+    "polymer": "Polymer/polymer#^0.5.4",
+    "star-rating": "star-rating",
+    "core-ajax": "Polymer/core-ajax",
+    "core-icons": "Polymer/core-icons",
+    "core-icon": "Polymer/core-icon",
+    "core-list": "Polymer/core-list",
+    "sc-link": "sc-link"
+  },
+  "devDependencies": {
+    "web-component-tester": "*"
+  }
+}

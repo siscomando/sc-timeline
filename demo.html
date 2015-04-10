@@ -1,0 +1,44 @@
+<!doctype html>
+<html>
+<head>
+  <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
+  <title>sc-timeline Demo</title>
+
+  <script src="../webcomponentsjs/webcomponents.min.js"></script>
+  <link rel="import" href="../../core-header-panel/core-header-panel.html">
+  <link rel="import" href="sc-timeline.html">
+  <style>
+  		#eventBtn {
+  			height: 60px;
+  			width: 300px;
+  		}
+  </style>
+</head>
+<body fullbleed vertical layout unresolved>
+    <button id="eventBtn">Dispatch Event!</button>
+    <sc-timeline></sc-timeline>
+
+    <script>
+
+    	var comment = '{"_id": {"$oid": "551be897f2c3820d48471176"}, "issue_id": {"Issue": {"register": "2015RI00009568", "title": "SISCOP - SISTEMA"}}, "created_at": {"$date": 1427881571744}, "shottime": 119, "body": "Continua trabalhando na demanda", "author": {"User": {"shortname": "mariajulia", "location": null, "avatar": "http://api.randomuser.me/portraits/thumb/women/9.jpg"}}, "stars": 0, "origin": 0}';  
+
+  		var btn = document.querySelector("#eventBtn");
+
+  		btn.addEventListener('click', function(){
+  			myEventHandler();
+  		});
+
+     	function myEventHandler (){
+    		var evt = document.createEvent("Event");
+			evt.initEvent("sc-sse-response", true, true);
+			evt.detail = {response: comment, alias:"sseTimeline"};
+			document.dispatchEvent(evt);
+     	};
+
+     	document.addEventListener("sc-sse-response", function(e) {
+     		console.log(e);
+     	});
+    </script>
+
+</body>
+</html>
