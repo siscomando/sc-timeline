@@ -143,7 +143,7 @@ Element providing the timeline to any apps.
               var ajaxLocal = callback.$.coreAjaxIssues;
               register = e.detail.issue;
               register = register.replace('/', '');
-              this.scope = register;
+              callback.scope = register;
               new_url = callback.urlOriginal + register + '/'; 
               callback.url = new_url;
               ajaxLocal.url = '/api/v1/issues/' + register;
