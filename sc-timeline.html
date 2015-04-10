@@ -197,7 +197,7 @@ Element providing the timeline to any apps.
 
               if (containsComment == false) {
                 // check scope
-                if (currentElem.scope == newComment.issue_id.Issue.register) {
+                if ((currentElem.scope === null) || (currentElem.scope == newComment.issue_id.Issue.register)) {
                   currentElem.response.comments.unshift(newComment);  
                 }
               }            
