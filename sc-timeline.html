@@ -18,7 +18,7 @@ Element providing the timeline to any apps.
 @status alpha
 @homepage http://github.com/siscomando/sc-timline
 -->
-<polymer-element name="sc-timeline" attributes="notitle author data emptyavatar url sseurl ssechannel ssealias">
+<polymer-element name="sc-timeline" attributes="notitle author data emptyavatar url sseurl ssechannel ssealias scope">
 
   <template>
   <core-ajax
@@ -88,7 +88,14 @@ Element providing the timeline to any apps.
        * @attribute url
        * @type string
        * @default ''
-       */       
+       */ 
+      /**
+       * The `scope` attribute sets an scope for timeline (e.g: #wall, ticket)
+       *
+       * @attribute scope
+       * @type string
+       * @default null
+       */               
       author: 'Horacio Ibrahim',
       publish: {
         // publics properties
@@ -98,7 +105,8 @@ Element providing the timeline to any apps.
         ssealias: 'sseTimeline',
         sseurlOriginal: null,
         urlOriginal: null,
-        response: '{"comments": "[]"}'
+        response: '{"comments": "[]"}',
+        scope: null
 
       },
       /* the best place to the constructor for array or object */
@@ -135,6 +143,7 @@ Element providing the timeline to any apps.
               var ajaxLocal = callback.$.coreAjaxIssues;
               register = e.detail.issue;
               register = register.replace('/', '');
+              this.scope = register;
               new_url = callback.urlOriginal + register + '/'; 
               callback.url = new_url;
               ajaxLocal.url = '/api/v1/issues/' + register;
@@ -156,7 +165,10 @@ Element providing the timeline to any apps.
         source.addEventListener('sc-sse-response', function(e){
           if (currentElem.response == null) {
               currentElem.response = {"comments": []};
-          }           
+          }  
+
+          // Tests if the response has content valid or is only retry
+          // if newComment is true has response!         
           if (('alias' in e.detail) && (e.detail.alias == 'sseTimeline') && (e.detail.response != 1)
               && (e.detail.response != null) && (e.detail.response != undefined)) {
               switch(typeof(e.detail.response)) {
@@ -165,22 +177,29 @@ Element providing the timeline to any apps.
                   break;
                 case 'object':
                   var newComment = e.detail.response;
+                  break;
                 default:
                   var newComment = false;
               }
 
+          // This point begins the real update
           if (!(newComment == false)) {
-            // start real update
-              var containsComment = false;
-              for (var item in currentElem.response.comments.length) {
-                item_id = item_id.$oid;
-                comment_id = newComment._id.$oid;
-                if (item_id == comment_id ) {
+              var containsComment = false; // content of the comment 
+
+              for (var i=0; i < currentElem.response.comments.length; i++) {
+                item = currentElem.response.comments[i];
+                itemId = item._id.$oid;
+                commentId = newComment._id.$oid;
+                if (itemId == commentId ) {
                     containsComment = true;
                 }
               }
+
               if (containsComment == false) {
-                currentElem.response.comments.unshift(newComment);  
+                // check scope
+                if (currentElem.scope == newComment.issue_id.Issue.register) {
+                  currentElem.response.comments.unshift(newComment);  
+                }
               }            
             // end real update            
           }
