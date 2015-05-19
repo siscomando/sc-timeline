@@ -18,7 +18,7 @@ Element providing the timeline to any apps.
 @status alpha
 @homepage http://github.com/siscomando/sc-timline
 -->
-<polymer-element name="sc-timeline" attributes="notitle author data emptyavatar url sseurl ssechannel ssealias scope">
+<polymer-element name="sc-timeline" attributes="notitle author data emptyavatar url sseurl ssechannel ssealias scope gravatarEnabled">
 
   <template>
   <core-ajax
@@ -45,7 +45,13 @@ Element providing the timeline to any apps.
             <div class="columns content" flex>
                 <div horizontal layout>
                   <div class="thumbnail">
-                    <img src="{{ model.author.User.avatar || emptyavatar }}">
+                    <!-- if gravatarEnabled -->
+                    <template bind if="{{ gravatarEnabled == 'true' }}">
+                      <img src="{{ getGravatarUrl(model.author.User.md5_email) }}">
+                    </template>
+                    <template bind if="{{ gravatarEnabled != 'true' }}">
+                      <img src="{{ model.author.User.avatar || emptyavatar }}">
+                    </template>
                   </div> 
                   <div class="author-info" flex>
                     <div class="username">{{ model.author.User.shortname }} 
@@ -103,7 +109,7 @@ Element providing the timeline to any apps.
       author: 'Horacio Ibrahim',
       publish: {
         // publics properties
-        emptyavatar: "static/img/avatar-empty.png",
+        emptyavatar: "static/assets/img/avatar-empty.png",
         url: '',
         sseurl: '',
         ssealias: 'sseTimeline',
@@ -260,7 +266,11 @@ Element providing the timeline to any apps.
               }
           }
           next();
-      }      
+      },
+      getGravatarUrl: function(md5) {
+        gravatarUrl = '//www.gravatar.com/avatar/' + md5 + "?s=" + 48;
+        return gravatarUrl
+      }     
     });
 
   </script>
