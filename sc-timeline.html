@@ -37,7 +37,7 @@ Element providing the timeline to any apps.
       <core-list data="{{response.comments}}" runwayFactor="12" flex>
         <template>
           <!-- begin post -->
-          <div class="row timeline-post {{ {selected: selected} | tokenList }} item-{{ model._id.$oid }}" horizontal layout>
+          <div id="{{ model._id.$oid }}" class="row timeline-post {{ {selected: selected} | tokenList }} item-{{ model._id.$oid }}" horizontal layout>
             <div class="columns shottime">{{ model.shottime }}</div>
             <div class="columns division-icon">
               <core-icon icon="{{ setIcon(model.origin) }}" class="pallete-icon-color autumn"></core-icon>
