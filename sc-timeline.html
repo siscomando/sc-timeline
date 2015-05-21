@@ -55,7 +55,7 @@ Element providing the timeline to any apps.
                   </div> 
                   <div class="author-info" flex>
                     <div class="username">{{ model.author.User.shortname }} 
-                      <span class="title">at {{ model.issue_id.Issue.title }} | <sc-link>{{model.issue_id.Issue.register}}</sc-link></span>
+                      <span class="title">at {{ model.title }} | <sc-link>{{model.issue_id.Issue.register}}</sc-link></span>
                     </div>
                     <div class="location">{{ model.author.User.location }}</div>
                     <div class="timepost">{{ model.created_at_human }}</div>

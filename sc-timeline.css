@@ -101,7 +101,10 @@ core-icon .pallete-icon-color .autumn {
   width: 80%;
   margin-left: 16px;
   margin-top: 16px;
-  overflow-wrap: break-word;  
+  overflow-wrap: break-word; 
+  word-wrap: break-word;
+  word-break: break-all;
+}
 }
 .timeline-social {
   /* .timeline-social is same level of .content
