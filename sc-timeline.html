@@ -137,6 +137,11 @@ Element providing the timeline to any apps.
         this.changeURL(document, 'sc-select', timeline);
         var currentElem = this;
         this.updateComment(document, currentElem);
+
+        // if sc-response fired to changed the timeline response
+        document.addEventListener('sc-response', function(ev) {
+          currentElem.response = ev.detail.response;
+        });
       },
       /**
        * The `changeURL` change URL of the core-ajax to get data from specif
