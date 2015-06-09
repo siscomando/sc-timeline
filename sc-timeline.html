@@ -5,6 +5,7 @@
 <link rel="import" href="../core-ajax/core-ajax.html">
 <link rel="import" href="../star-rating/star-rating.html">
 <link rel="import" href="../sc-link/sc-link.html">
+<link rel="import" href="../paper-elements/paper-elements.html">
 
 <!--
 Element providing the timeline to any apps.
@@ -34,10 +35,12 @@ Element providing the timeline to any apps.
     <link rel="stylesheet" href="sc-timeline.css">
     <div class="mainContent" flex horizontal layout>
       <br>
-      <core-list data="{{response.comments}}" runwayFactor="12" flex>
+      <core-list id="coreList" data="{{response.comments}}" runwayFactor="12" height="48" flex>
         <template>
-          <!-- begin post -->
-          <div id="{{ model._id.$oid }}" class="row timeline-post {{ {selected: selected} | tokenList }} item-{{ model._id.$oid }}" horizontal layout>
+          <!-- begin post 
+          TODO: new core-list template to support list users
+          -->
+          <div id="id{{ model._id.$oid }}" class="row timeline-post {{ {selected: selected} | tokenList }} item-{{ model._id.$oid }}" horizontal layout>
             <div class="columns shottime">{{ model.shottime }}</div>
             <div class="columns division-icon">
               <core-icon icon="{{ setIcon(model.origin) }}" class="pallete-icon-color autumn"></core-icon>
@@ -64,7 +67,9 @@ Element providing the timeline to any apps.
                 <div class="stars">
                     <star-rating votes="{{ model.stars }}" votesSum="0"></star-rating>
                 </div>
-                <div class="post">{{ model.body }}</div>
+                <div class="post" on-tap="{{getFullContent}}">
+                    {{ model.body | ellipsis }}
+                </div>
             </div>
           </div>
           <!-- end post -->
@@ -142,6 +147,8 @@ Element providing the timeline to any apps.
         document.addEventListener('sc-response', function(ev) {
           currentElem.response = ev.detail.response;
         });
+
+        this.$.coreList.focus();
       },
       /**
        * The `changeURL` change URL of the core-ajax to get data from specif
@@ -242,6 +249,26 @@ Element providing the timeline to any apps.
         // default
         return 'communication:no-sim';
       },
+      getFullContent: function(event, detail, sender) {
+        var comment = sender.templateInstance.model.model;
+        this[comment._id.$oid] = comment;
+        sender.innerHTML = this[comment._id.$oid]['body'];
+        sender.style.height =  "100%";
+      },      
+      ellipsis: function(body) {
+        if (body) {
+          if (body.length > 200) {
+              // save content
+              bodyHidden = body.slice(200);
+              // resize body
+              body = body.slice(0, 200);
+              body = body + "...";
+              return body;
+          } else {
+            return body;
+          }
+        }
+      },        
       /**
       from: http://stackoverflow.com/a/9145985/2283488
       */

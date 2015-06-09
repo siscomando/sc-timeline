@@ -27,7 +27,7 @@ polyfill-next-selector { content: ':host > h2'; }
   /* min-height: 300px;  this is defined by shottime */
 }
 core-list {
- 
+  height: 100%;
 }
 .shottime {
   position: relative;
@@ -75,11 +75,14 @@ core-list {
   font-size: 0.7em;
 }
 .post {
+  font-family: inherit;
+  display: block;
   font-weight: 400 !important; 
   color: #3D3C40;
   font-size: 14px;
   line-height: 20px;
   padding-right: 20px;
+  cursor: pointer;
 }
 core-icon {
   color: rgba(114, 98, 151, 0.8);
