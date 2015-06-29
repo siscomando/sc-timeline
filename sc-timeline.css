@@ -75,14 +75,19 @@ core-list {
   font-size: 0.7em;
 }
 .post {
-  font-family: inherit;
   display: block;
+  font-family: inherit;
   font-weight: 400 !important; 
   color: #3D3C40;
   font-size: 14px;
   line-height: 20px;
   padding-right: 20px;
   cursor: pointer;
+  min-height: 100%;
+}
+.post .hashLink {
+  color: #47CACC !important;
+  text-decoration: none;
 }
 core-icon {
   color: rgba(114, 98, 151, 0.8);
