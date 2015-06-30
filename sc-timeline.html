@@ -70,7 +70,7 @@ Element providing the timeline to any apps.
                     <star-rating votes="{{model.stars.votes}}" score="{{model.stars.score}}" 
                     readOnly="{{model.stars.readOnly}}" url="/api/v1/stars/comments" pk="{{ model._id.$oid }}"></star-rating>
                 </div>
-                <div class="post" on-tap="{{getFullContent}}" on-hold="{{turnEditable}}">
+                <div class="post" on-click="{{getFullContent}}" on-hold="{{turnEditable}}" on-dblclick="{{collpaseContent}}">
                     <sc-contentHTML htmldata="{{ellipsis(model.body) }}"></sc-contentHTML>
                 </div>
             </div>
@@ -252,16 +252,29 @@ Element providing the timeline to any apps.
         // default
         return 'communication:no-sim';
       },
+      /*
+      * Expands .post (or row) with long text AND apply fade effects one time.
+      *
+      */
       getFullContent: function(event, detail, sender) {
         var comment = sender.templateInstance.model.model;
         sender.innerHTML = comment.body;
-        
+        // hackView is a workaround solution to save information when the fade
+        // effects already done. 
         if (sender.style.hackView !=  true) {
           this.fadeObject(sender, 0, 1, 1000);
           sender.style.hackView = true;
         } 
-        
       }, 
+      /*
+      * Collapse div.post (or row) with long text.
+      *
+      */
+      collpaseContent: function(event, detail, sender) {
+        var comment = sender.templateInstance.model.model;
+        sender.style.hackView = false;
+        sender.innerHTML = this.ellipsis(comment.body);
+      },
       turnEditable: function(event, detail, sender) {
         // sender.contentEditable = true;
         // TODO: turn contentEditable, send content when leave, change to not
