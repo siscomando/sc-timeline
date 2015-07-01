@@ -73,6 +73,7 @@ Element providing the timeline to any apps.
                 <div class="post" on-click="{{getFullContent}}" on-hold="{{turnEditable}}" on-dblclick="{{collpaseContent}}">
                     <sc-contentHTML htmldata="{{ellipsis(model.body) }}"></sc-contentHTML>
                 </div>
+                <!-- <div class="actions-for-post"><paper-button class="btn-collapse">Encolher</paper-button></div> -->
             </div>
           </div>
           <!-- end post -->
@@ -257,7 +258,7 @@ Element providing the timeline to any apps.
       *
       */
       getFullContent: function(event, detail, sender) {
-        var comment = sender.templateInstance.model.model;
+        var comment = sender.templateInstance.model.model;        
         sender.innerHTML = comment.body;
         // hackView is a workaround solution to save information when the fade
         // effects already done. 

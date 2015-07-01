@@ -53,7 +53,7 @@ core-list {
 }
 .title {
   font-size: 0.9em;
-  font-weight: 100 !important;
+  font-weight: 300 !important;
   color: #8B898F;
 }
 .stars {
@@ -72,18 +72,30 @@ core-list {
 }
 .timepost {
   color: #C8C8C8;
-  font-size: 0.7em;
+  font-size: 0.9em;
+  font-weight: 300 !important;
 }
 .post {
   display: block;
   font-family: inherit;
-  font-weight: 400 !important; 
+  font-weight: 300 !important; 
   color: #3D3C40;
-  font-size: 14px;
+  font-size: 15px;
   line-height: 20px;
   padding-right: 20px;
   cursor: pointer;
   min-height: 100%;
+}
+.post .actions-for-post {
+  width: 100%;
+}
+paper-button.btn-collapse {
+  display: none;
+  background-color: rgba(255,255,255,0.5);
+  color: #888;
+  margin: 0;
+  font-size: 0.85em;
+  width: 100%;
 }
 .post .hashLink {
   color: #47CACC !important;
