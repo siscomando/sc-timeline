@@ -152,12 +152,20 @@ core-icon .pallete-icon-color .autumn {
     vertical-align: middle;
     min-width: 32px;
     border-right: 1px solid #E0E0E0;
+  }
+  .timeline-post, .row {
+    margin-bottom: 45px;
+  }
+  .post {
+    padding-right: 5px;  
+  }
 }
-.timeline-post, .row {
-  margin-bottom: 45px;
-}
-.post {
-  padding-right: 5px;  
+@media (max-width: 640px) {
+    .content {
+      padding-right: 20px;
+    }
+    .post {
+      font-size: 14px;
+    }
 }
 
-}
