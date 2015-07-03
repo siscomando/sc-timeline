@@ -97,7 +97,7 @@ paper-button.btn-collapse {
   font-size: 0.85em;
   width: 100%;
 }
-.post .hashLink {
+.post .hashLink, .post .mentions {
   color: #47CACC !important;
   text-decoration: none;
 }
