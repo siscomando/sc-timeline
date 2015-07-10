@@ -7,6 +7,7 @@
   font-family: 'RobotoDraft', sans-serif;
   font-weight: 300;
   overflow: auto;
+  touch-action: none;
   /* border-radius: 10px;
   border: 1px solid #D8D8D8; */
 }
@@ -23,12 +24,13 @@ polyfill-next-selector { content: ':host > h2'; }
 }
 .timeline-post, .row {
   border-bottom: 1px solid #f9f9f9;
-  margin-bottom: 35px;
+  /* margin-bottom: 35px; */
   /* min-height: 300px;  this is defined by shottime */
 }
-core-list {
+#coreList {
   height: 100%;
 }
+
 .shottime {
   position: relative;
   text-align: center;
@@ -154,7 +156,7 @@ core-icon .pallete-icon-color .autumn {
     border-right: 1px solid #E0E0E0;
   }
   .timeline-post, .row {
-    margin-bottom: 45px;
+    /* margin-bottom: 15px; */
   }
   .post {
     padding-right: 5px;  

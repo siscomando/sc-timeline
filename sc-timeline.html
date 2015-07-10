@@ -3,6 +3,7 @@
 <link rel="import" href="../core-icon/core-icon.html">
 <link rel="import" href="../core-icons/communication-icons.html">
 <link rel="import" href="../core-ajax/core-ajax.html">
+<link rel="import" href="../core-scroll-threshold/core-scroll-threshold.html">
 <link rel="import" href="../star-rating/star-rating.html">
 <link rel="import" href="../sc-link/sc-link.html">
 <link rel="import" href="../paper-elements/paper-elements.html">
@@ -23,22 +24,32 @@ Element providing the timeline to any apps.
 <polymer-element name="sc-timeline" attributes="notitle author data emptyavatar url sseurl ssechannel ssealias scope gravatarEnabled">
 
   <template>
+  <!-- for get latest comments -->
   <core-ajax
   auto
   url="{{url}}"
   handleAs="json"
   response="{{response}}"
   ></core-ajax>
+  <!-- for updates comments oldest -->
+  <core-ajax
+  auto
+  id="oldestComments"
+  url="{{urlOldest}}"
+  handleAs="json"
+  response="{{_responseOldest}}"
+  ></core-ajax>
 
   <sc-sse stream="{{sseurl}}" channel="{{ssechannel}}" alias="{{ssealias}}">
   </sc-sse>
-  
+
     <link rel="stylesheet" href="sc-timeline.css">
     <div class="mainContent" flex horizontal layout>
       <br>
-      <core-list id="coreList" data="{{response.comments}}" runwayFactor="12" height="48" flex>
+      <core-scroll-threshold id="threshold" lowerThreshold="100">
+      <div id="coreList" touch-action="pan-y" flex>
         <br/>
-        <template>
+        <template id="scroller" repeat="{{model in response.comments}}">
           <!-- begin post 
           TODO: new core-list template to support list users
           -->
@@ -70,7 +81,7 @@ Element providing the timeline to any apps.
                     <star-rating votes="{{model.stars.votes}}" score="{{model.stars.score}}" 
                     readOnly="{{model.stars.readOnly}}" url="/api/v1/stars/comments/" pk="{{ model._id.$oid }}"></star-rating>
                 </div>
-                <div class="post" on-click="{{getFullContent}}" on-hold="{{turnEditable}}" on-dblclick="{{collpaseContent}}">
+                <div class="post" on-click="{{getFullContent}}" on-dblclick="{{collpaseContent}}">
                     <sc-contentHTML htmldata="{{ellipsis(model.body) }}"></sc-contentHTML>
                 </div>
                 <!-- <div class="actions-for-post"><paper-button class="btn-collapse">Encolher</paper-button></div> -->
@@ -78,7 +89,11 @@ Element providing the timeline to any apps.
           </div>
           <!-- end post -->
         </template>
-      </core-list>
+        <div>
+          <!-- illusion -->
+        </div>
+      </div>
+    </core-scroll-threshold> 
       
     </div>
 
@@ -126,14 +141,12 @@ Element providing the timeline to any apps.
         urlOriginal: null,
         response: '{"comments": "[]"}',
         scope: null,
-      },
-      /* the best place to the constructor for array or object */
-      created: function() {
-        // initialize but it not is turned public to use by users of the element
-        // to turn public to use attributes or publish.    
-        // init response       
+        urlOldest: '',
+        currentPage: 1,
       },
       ready: function() {
+        var self = this;
+
         // keep original url's
         if (this.sseurlOriginal === null) {
           this.sseurlOriginal = this.sseurl;    
@@ -141,15 +154,17 @@ Element providing the timeline to any apps.
         if (this.urlOriginal === null) {
           this.urlOriginal = this.url;    
         }
-        // var scnavbar = document.querySelector('sc-navbar');
-        var timeline = this;
-        this.changeURL(document, 'sc-select', timeline);
-        var currentElem = this;
-        this.updateComment(document, currentElem);
+        
+        this.changeURL(document, 'sc-select', self);
+        this.updateComment(document);
 
-        // if sc-response fired to changed the timeline response
+        // if sc-response is fired when comments are returned by requests.
         document.addEventListener('sc-response', function(ev) {
-          currentElem.response = ev.detail.response;
+          self.response = ev.detail.response;
+        });
+
+        document.addEventListener('lower-trigger', function() {
+          self.loadNextPage(); 
         });
 
         this.$.coreList.focus();
@@ -175,39 +190,86 @@ Element providing the timeline to any apps.
               ajaxLocal.go();
         });
       },
+      /**
+       * `setUrlOldest` defines an url with querystring page defined. The 
+       * pagination order is persisted in the property currentPage.
+       * 
+      */
+      setUrlOldest: function(plus) {
+        this.currentPage += parseInt(plus);
+        var urlOld = this.url + '?page=' + this.currentPage;
+        return urlOld;
+      },
+      /**
+       * `loadNextPage` changes url of the core-ajax#oldestComments that makes
+       *  a new request to get more comments with pagination (?page=X defined).
+      */
+      loadNextPage: function() {
+        var self = this;
+        self.$.oldestComments.url = self.setUrlOldest(1); // Auto .go() to core-ajax
+      },
+      /**
+       * `_responseOldestChanged` occurs automacally if response was sucessful 
+       * from core-ajax#oldestComments request.
+      */
+      _responseOldestChanged: function() {
+        var self = this;
+        if (self._responseOldest === null) {
+          return ;
+        }
+        try {
+          if (('comments' in self._responseOldest) &&
+               (self._responseOldest.comments.length > 0)) {
+            self.response.comments = self.response.comments.concat(self._responseOldest.comments);  
+            self.$.threshold.clearLower();
+          }
+          
+        } catch(err) {
+          console.info("Error at trying loadNextPage: " + err);
+        }
+      },
+      /**
+       * `getIssue` get the number from register (or issue)
+      */
       getIssue: function() {
           var ajaxLocal = this.$.coreAjaxIssues;
           this.sseurl = this.sseurlOriginal + ajaxLocal.response.issue._id.$oid;
       },     
       /** `The updateTimeline` updates the timeline based in returned data from
-      * sse event (emit): sc-sse-response
+      * sse event (emit): `sc-sse-response`
       *
       * @param ontop if true the payload is added in top of the timeline. Rather
-      * the update is added in bottom.
+      * the update is added in bottom (DEPRECATED).
       * @param 
       */
-      updateComment: function(source, currentElem) {
+      updateComment: function(source) {
+        var self = this;
         source.addEventListener('sc-sse-response', function(e){
-          if (currentElem.response == null) {
-              currentElem.response = {"comments": []};
-          }  
 
-          // Tests if the response has content valid or is only retry
-          // if newComment is true has response!         
-          if (('alias' in e.detail) && (e.detail.alias == 'sseTimeline') && (e.detail.response != 1)
-              && (e.detail.response != null) && (e.detail.response != undefined)) {
-              switch(typeof(e.detail.response)) {
-                case 'string':
-                  var newComment = JSON.parse(e.detail.response);
-                  break;
-                case 'object':
-                  var newComment = e.detail.response;
-                  break;
-                default:
-                  var newComment = false;
-              }
+          // If not exists the array with comments (response from requests).
+          self.response = self.response == null ? {"comments": []} : self.response;
 
-          // wrapper that fix dual newComment
+          // if not exists `alias` is not sc-sse-response defined to sc-timeline OR
+          // if not exists `sseTimeline` also. 
+          if (!('alias' in e.detail) || (e.detail.alias != 'sseTimeline') 
+              || (e.detail.response == 1) || (e.detail.response == null) || 
+              (e.detail.response == undefined)) {
+              return ;
+          }
+          // test the typeof to handle correctly
+          switch(typeof(e.detail.response)) {
+            case 'string':
+              var newComment = JSON.parse(e.detail.response);
+              break;
+            case 'object':
+              var newComment = e.detail.response;
+              break;
+            default:
+              var newComment = false;
+          }
+          // wrapper to fix two types of responses sent by sc-sse. One with 
+          // multiple `commentS` another with only one `comment`. Because it
+          // can to generate updates stream for only one comment.
           if ('comments' in  newComment) {
               newComment = newComment.comments;
           }
@@ -215,31 +277,40 @@ Element providing the timeline to any apps.
           if (!(newComment == false)) {
               var containsComment = false; // content of the comment 
               var order = null;
-              for (var i=0; i < currentElem.response.comments.length; i++) {
-                item = currentElem.response.comments[i];
+              
+              for (var i=0; i < self.response.comments.length; i++) {
+                item = self.response.comments[i];
                 itemId = item._id.$oid;
                 commentId = newComment._id ? newComment._id.$oid : null;
+                
                 if (itemId == commentId ) {
                     containsComment = true;
                     order = i;
                 }
+
               }
-              // check scope
-              if ((currentElem.scope === null) || (currentElem.scope == newComment.issue_id.Issue.register)) {
+              // check scope (register) will verify if the comments returned are children
+              // from current 'open' register/issue view.
+              if ((self.scope === null) || 
+                      (self.scope == newComment.issue_id.Issue.register)) {
+                  
                   if (containsComment == false) {
-                     currentElem.response.comments.unshift(newComment);
+                     self.response.comments.unshift(newComment);
                   } else {
-                     currentElem.response.comments[order] = newComment;
+                     self.response.comments[order] = newComment;
                   }
-                   var lastPost = currentElem.shadowRoot.querySelector('.timeline-post');
-                   lastPost.style.opacity = "0.0";
-                   currentElem.fadeObject(lastPost, 0, 1, 1250);                  
+                   // DESCEND ORDER. The last is first.
+                   // Applying effects.
+                   setTimeout(function(){
+                      var lastPost = self.shadowRoot.querySelector('.timeline-post'); 
+                      lastPost.style.opacity = "0.0";
+                      self.fadeObject(lastPost, 0, 1, 1250); 
+                   }, 50);                
               }         
               // end real update            
             }                   
-          }
         });
-      },
+      },      
       setIcon: function(origin) {
         if (origin == 0) {
           return 'communication:chat';
@@ -258,14 +329,21 @@ Element providing the timeline to any apps.
       *
       */
       getFullContent: function(event, detail, sender) {
-        var comment = sender.templateInstance.model.model;        
-        sender.innerHTML = comment.body;
-        // hackView is a workaround solution to save information when the fade
-        // effects already done. 
-        if (sender.style.hackView !=  true) {
-          this.fadeObject(sender, 0, 1, 1000);
-          sender.style.hackView = true;
-        } 
+        var comment;    
+        try {
+          var comment = sender.templateInstance.model.model;
+          sender.innerHTML = comment.body;
+          // hackView is a workaround solution to save information when the fade
+          // effects already done. 
+          if (sender.style.hackView !=  true) {
+            this.fadeObject(sender, 0, 1, 1000);
+            sender.style.hackView = true;
+          } 
+        } catch(e) {
+          // console.warn("No body...no errors...no problems ;)");
+        }
+        this.focus();
+        comment = null;
       }, 
       /*
       * Collapse div.post (or row) with long text.
@@ -328,7 +406,7 @@ Element providing the timeline to any apps.
       getGravatarUrl: function(md5) {
         gravatarUrl = '//www.gravatar.com/avatar/' + md5 + "?s=" + 48;
         return gravatarUrl
-      }     
+      } 
     });
 
   </script>
