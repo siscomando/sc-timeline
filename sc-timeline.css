@@ -20,13 +20,18 @@ polyfill-next-selector { content: ':host > h2'; }
 .mainContent {
   overflow: auto;
   height: 100%;
-  width: 100%; 
+  width: 100%;
 }
 .timeline-post, .row {
   border-bottom: 1px solid #f9f9f9;
   /* margin-bottom: 35px; */
   /* min-height: 300px;  this is defined by shottime */
 }
+
+core-scroll-threshold {
+  width: 100%;
+}
+
 #coreList {
   height: 100%;
 }
@@ -64,7 +69,7 @@ polyfill-next-selector { content: ':host > h2'; }
   margin-bottom: 2px;
 }
 .username {
-  font-style: bold; 
+  font-style: bold;
   font-weight: 700 !important;
   line-height: 16px;
 }
@@ -80,7 +85,7 @@ polyfill-next-selector { content: ':host > h2'; }
 .post {
   display: block;
   font-family: inherit;
-  font-weight: 300 !important; 
+  font-weight: 300 !important;
   color: #3D3C40;
   font-size: 16px;
   line-height: 24px;
@@ -123,7 +128,7 @@ core-icon .pallete-icon-color .autumn {
   width: 80%;
   margin-left: 16px;
   margin-top: 16px;
-  overflow-wrap: break-word; 
+  overflow-wrap: break-word;
   word-wrap: break-word;
   word-break: break-all;
 }
@@ -132,7 +137,7 @@ core-icon .pallete-icon-color .autumn {
   /* .timeline-social is same level of .content
       because its margins is same */
   margin-left: 16px;
-  margin-top: 16px;  
+  margin-top: 16px;
 }
 .thumbnail img {
   background-color: #ccc;
@@ -159,7 +164,7 @@ core-icon .pallete-icon-color .autumn {
     /* margin-bottom: 15px; */
   }
   .post {
-    padding-right: 5px;  
+    padding-right: 5px;
   }
 }
 @media (max-width: 640px) {
@@ -170,4 +175,3 @@ core-icon .pallete-icon-color .autumn {
       font-size: 14px;
     }
 }
-
