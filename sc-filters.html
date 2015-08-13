@@ -1,0 +1,40 @@
+<script>
+
+var me = JSON.parse(window.localStorage.getItem("Account"));
+var current_user = me.message.user;
+
+PolymerExpressions.prototype.scoreSum = function (stars) {
+
+  if (stars !== undefined && stars !== null) {
+    var output = 0;
+    var sum = 0;
+    for (var i = 0; i < stars.length; i++) {
+       item = stars[i];
+       if (item != null && item != undefined) {
+          output += item['score'];
+       }
+    }
+    return output;
+  }
+}
+
+PolymerExpressions.prototype.checkUserExists = function (stars) {
+
+  if (typeof(stars) == 'number') {
+    return true;
+  }
+
+  if (stars !== undefined && typeof(stars) == 'object' && stars !== null) {
+    for (var i = 0; i < stars.length; i++) {
+       item = stars[i];
+       if (item != null && item != undefined) {
+          // if only 1 of the votes was done by current_user this must be readOnly
+          if (item['voter'] == current_user) {
+            return true;
+          }
+       }
+    }
+  }
+}
+
+</script>
