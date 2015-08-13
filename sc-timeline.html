@@ -8,7 +8,7 @@
 <link rel="import" href="../sc-link/sc-link.html">
 <link rel="import" href="../paper-elements/paper-elements.html">
 <link rel="import" href="../sc-contentHTML/sc-contentHTML.html">
-<link rel="import" href="score-filter.html"/>
+<link rel="import" href="sc-filters.html"/>
 
 <!--
 Element providing the timeline to any apps.
@@ -22,20 +22,21 @@ Element providing the timeline to any apps.
 @status alpha
 @homepage http://github.com/siscomando/sc-timline
 -->
-<polymer-element name="sc-timeline" attributes="notitle author data emptyavatar url sseurl ssechannel ssealias scope gravatarEnabled">
+<polymer-element name="sc-timeline" attributes="notitle author data emptyavatar url sseurl ssechannel ssealias scope gravatarEnabled urlrate">
 
   <template>
-  <!-- for get latest comments -->
+  <!-- for get latest comments. The main `requester` for
+  get new comments when is loaded the app both general feed
+  or specific issue's feed -->
   <core-ajax
   auto
   url="{{url}}"
   handleAs="json"
   response="{{response}}"
-  contetType="application/json"
   headers="{{ headerRequest() }}"
   contentType="application/json"
   ></core-ajax>
-  <!-- for updates comments oldest -->
+  <!-- for updates comments oldest. This is pagination `requester`  -->
   <core-ajax
   auto
   id="oldestComments"
@@ -69,27 +70,32 @@ Element providing the timeline to any apps.
                   <div class="thumbnail">
                     <!-- if gravatarEnabled -->
                     <template bind if="{{ gravatarEnabled == 'true' }}">
-                      <img src="{{ getGravatarUrl(model.author.User.md5_email) }}">
+                      <img src="{{ getGravatarUrl(model.author.md5_email) }}">
                     </template>
                     <template bind if="{{ gravatarEnabled != 'true' }}">
-                      <img src="{{ model.author.User.avatar || emptyavatar }}">
+                      <img src="{{ model.author.avatar || emptyavatar }}">
                     </template>
                   </div>
                   <div class="author-info" flex>
-                    <div class="username">{{ model.author.User.username }}
-                      <span class="title">at {{ model.title }} <template if="{{model.issue_id.Issue.register}}">|</template> <sc-link>{{model.issue_id.Issue.register}}</sc-link></span>
+                    <div class="username">{{ model.author.username }}
+                      <span class="title">at {{ model.title }} <template if="{{model.issue.register}}">|</template> <sc-link>{{model.issue.register}}</sc-link></span>
                     </div>
-                    <div class="location">{{ model.author.User.location }}</div>
+                    <div class="location">{{ model.author.location }}</div>
                     <!-- TODO: This approach with created_at-human can be
                     totally changed because Eve will to return something as
                     "Tue, 02 Apr 2013 10:29:13 GMT" -->
-                    <div class="timepost">{{ model.created_at_human }}</div>
+                    <div class="timepost">{{ model.created_at }}</div>
                   </div>
                 </div>
                 <div class="stars">
                     <template if="{{model.stars}}">
                       <star-rating votes="{{model.stars.length}}" score="{{ model.stars | scoreSum }}"
-                      readOnly="{{model.stars.readOnly}}" url="/api/v2/stars/new/" pk="{{ model._id }}">
+                      readOnly="{{model.stars | checkUserExists }}" url="{{ urlrate }}" pk="{{ model._id }}">
+                      </star-rating>
+                    </template>
+                    <template if="{{!model.stars}}">
+                      <star-rating votes="{{model.stars.length}}" score="{{ model.stars }}"
+                      readOnly="false" url="{{ urlrate }}" pk="{{ model._id }}">
                       </star-rating>
                     </template>
                 </div>
@@ -108,7 +114,10 @@ Element providing the timeline to any apps.
     </core-scroll-threshold>
 
     </div>
-
+      <!--
+        * The `coreAjaxIssues` is the requester to get issues.
+        * `on-core-response` where is the handler when response is fired.
+      -->
       <core-ajax
         id="coreAjaxIssues"
         url=""
@@ -157,6 +166,13 @@ Element providing the timeline to any apps.
         scope: null,
         urlOldest: '',
         currentPage: 1,
+        urlrate: ''
+      },
+      create: function () {
+        var hasSiscomando = siscomando || false;
+        if (hasSiscomando === false) {
+          console.error("Siscomando library not found <sc-timeline>");
+        }
       },
       ready: function() {
         var self = this;
@@ -184,25 +200,39 @@ Element providing the timeline to any apps.
         this.$.coreList.focus();
       },
       /**
-       * The `changeURL` change URL of the core-ajax to get data from specif
+       * The `changeURL` change url of the core-ajax to get data from a specif
        * item.
        *
        * @method changeURL
        * @param source the instance that will to generate an event
        * @param eventName the name of the event generated by source
-       * @param callback a callback function or this custom element
+       * @param callback a function or an element that stores some
+       * properties.
        */
       changeURL: function(source, eventName, callback) {
         source.addEventListener(eventName, function(e){
+              self = callback;
               var ajaxLocal = callback.$.coreAjaxIssues;
               register = e.detail.issue;
               register = register.replace('/', '');
-              callback.scope = register;
-              new_url = callback.urlOriginal + register + '/';
-              callback.url = new_url;
-              ajaxLocal.url = URLS.comments_item + register;
+              // Change scope is like to exit from feed general to feed of
+              // the issue...
+              self.scope = register;
+              //... because is needs to update the urls for the requests with
+              // base in the current selected Issue...
+              self.url = siscomando.helpers.comments.resources.getUrlByRegister(register);
+              //... it's now update the issue info.
+              ajaxLocal.url = siscomando.helpers.issues.item.getUrl(register);
               ajaxLocal.go();
         });
+      },
+      /**
+       * `getIssue` get the number from register (or issue) and updates sse.
+       * This is useful when the issue is opened.
+      */
+      getIssue: function() {
+          var ajaxLocal = this.$.coreAjaxIssues;
+          this.sseurl = siscomando.helpers.comments.stream.getUrlByIssue(ajaxLocal.response._id);
       },
       /**
        * `setUrlOldest` defines an url with querystring page defined. The
@@ -242,14 +272,7 @@ Element providing the timeline to any apps.
           console.info("Error at trying loadNextPage: " + err);
         }
       },
-      /**
-       * `getIssue` get the number from register (or issue)
-      */
-      getIssue: function() {
-          var ajaxLocal = this.$.coreAjaxIssues;
-          this.sseurl = this.sseurlOriginal + ajaxLocal.response.issue._id.$oid;
-      },
-      /** `The updateTimeline` updates the timeline based in returned data from
+      /** The `updateComment` updates the timeline based in returned data from
       * sse event (emit): `sc-sse-response`
       *
       * @param ontop if true the payload is added in top of the timeline. Rather
@@ -259,7 +282,7 @@ Element providing the timeline to any apps.
       updateComment: function(source) {
         var self = this;
         source.addEventListener('sc-sse-response', function(e){
-
+          console.log(e);
           // If not exists the array with comments (response from requests).
           self.response = self.response == null ? {"_items": []} : self.response;
 
@@ -295,8 +318,8 @@ Element providing the timeline to any apps.
 
               for (var i=0; i < self.response._items.length; i++) {
                 item = self.response._items[i];
-                itemId = item._id.$oid;
-                commentId = newComment._id ? newComment._id.$oid : null;
+                itemId = item._id;
+                commentId = newComment._id ? newComment._id : null;
 
                 if (itemId == commentId ) {
                     containsComment = true;
@@ -307,7 +330,7 @@ Element providing the timeline to any apps.
               // check scope (register) will verify if the comments returned are children
               // from current 'open' register/issue view.
               if ((self.scope === null) ||
-                      (self.scope == newComment.issue_id.Issue.register)) {
+                      (self.scope == newComment.register)) {
 
                   if (containsComment == false) {
                      self.response._items.unshift(newComment);
